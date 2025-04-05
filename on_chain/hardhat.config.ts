@@ -12,16 +12,12 @@ if (!process.env.PRIVATE_KEY) {
 }
 
 const config: HardhatUserConfig = {
-  solidity: "0.8.28",
+  solidity: "0.8.20",
   networks: {
     bahamut: {
-      url: "https://rpc1-horizon.bahamut.io",
+      url: "https://rpc1.bahamut.io",
       accounts: [process.env.PRIVATE_KEY],
-      chainId: 2552,
-      // gasPrice: 2000000000000, // 2000 gwei
-      // gasMultiplier: 1.2,
-      // blockGasLimit: 30000000,
-      // timeout: 60000,
+      chainId: 5165,
     },
   },
 };
