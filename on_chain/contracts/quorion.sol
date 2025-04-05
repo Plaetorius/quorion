@@ -445,14 +445,6 @@ contract QuorionManager is AccessControl, ReentrancyGuard {
         revert("Quorion: Function does not exist");
     }
 
-    // --- Admin Utility (Use with caution!) ---
-
-    /**
-     * @notice Allows admin to withdraw FTN from the contract balance.
-     * @dev DANGER: This can withdraw funds from active mission pools if not used carefully.
-     * @param _to The address to send the FTN to.
-     * @param _amount The amount of FTN (in wei) to withdraw.
-     */
     function emergencyWithdrawFTN(
         address payable _to,
         uint256 _amount
