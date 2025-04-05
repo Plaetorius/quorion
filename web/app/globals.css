@@ -214,3 +214,13 @@
   animation: pulse-animation 3s infinite ease-in-out;
 }
 
+/* Ensure dropdowns are visible */
+.dropdown-menu {
+  position: absolute;
+  z-index: 100;
+}
+
+/* Fix for glass-card overflow issues */
+.glass-card {
+  overflow: visible !important;
+}

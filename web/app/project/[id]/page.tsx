@@ -114,9 +114,11 @@ export default function ProjectPage({ params }: ProjectPageProps) {
             <h2 className="text-xl font-semibold mb-6">Project Actions</h2>
 
             <div className="space-y-4">
-              <Button className="w-full" variant="progress">
-                <Send className="mr-2 h-4 w-4" />
-                Contribute Data
+              <Button className="w-full" variant="default" asChild>
+                <Link href={`/project/${project.id}/contribute`}>
+                  <Send className="mr-2 h-4 w-4" />
+                  Contribute Data
+                </Link>
               </Button>
 
               <Button className="w-full" variant="outline">
