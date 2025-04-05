@@ -3,16 +3,10 @@ import "@nomicfoundation/hardhat-toolbox";
 
 const config: HardhatUserConfig = {
   solidity: "0.8.28",
-};
-
-module.exports = {
-  defaultNetwork: "bahamut",
-
   networks: {
-    sahara: {
-      url: "rpc1-horizon.bahamut.io",
-
-      accounts: [process.env.PRIVATE_KEY],
+    bahamut: {
+      url: "https://rpc1-horizon.bahamut.io",
+      accounts: process.env.PRIVATE_KEY,
     },
   },
 };
