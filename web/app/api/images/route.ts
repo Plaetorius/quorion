@@ -1,7 +1,8 @@
 // app/api/images/route.ts
 import { prisma } from '@/lib/prisma';
+import { NextRequest, NextResponse } from 'next/server';
 
-export async function GET(request: Request) {
+export async function GET(request: NextRequest) {
   try {
     // Récupère toutes les images de la DB
     const images = await prisma.image.findMany();
@@ -21,8 +22,7 @@ export async function GET(request: Request) {
     });
   } catch (error) {
     console.error(error);
-    return new Response('Erreur lors de la récupération des images.', {
-      status: 500,
-    });
+    return NextResponse.json({ success: false, message: "Error saving images" }, { status: 500 })
+
   }
 }

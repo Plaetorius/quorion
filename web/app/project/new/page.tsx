@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
 import { toast } from "react-toastify"
-import { ArrowLeft, Plus, Trash2 } from "lucide-react"
+import { ArrowLeft, Plus, Trash2 } from 'lucide-react'
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -24,7 +24,6 @@ const projectSchema = z.object({
   adminAddresses: z.array(z.string().min(1)).min(1, "At least one admin address is required"),
   validatorAddresses: z.array(z.string().min(1)),
   dataTypes: z.array(z.string()).min(1, "Select at least one data type"),
-  requiredElements: z.number().min(1, "Required elements must be at least 1"),
   totalPrizePool: z.number().min(1, "Prize pool must be at least 1"),
   contactEmail: z.string().email("Please enter a valid email address"),
 })
@@ -51,7 +50,6 @@ export default function NewProjectPage() {
       adminAddresses: [""],
       validatorAddresses: [""],
       dataTypes: [],
-      requiredElements: 1000,
       totalPrizePool: 10000,
     },
   })
@@ -130,9 +128,18 @@ export default function NewProjectPage() {
   }
 
   const onSubmit = (data: ProjectFormValues) => {
+    // Calculate total required elements from all forms
+    const totalRequiredElements = customForms.reduce((total, form) => {
+      return total + (form.requiredElements || 0)
+    }, 0)
+
     // In a real app, this would send the data to an API
-    console.log(data)
-    console.log("Custom Forms:", customForms)
+    console.log({
+      ...data,
+      requiredElements: totalRequiredElements,
+      forms: customForms,
+    })
+
     toast.success("Project created successfully!")
     // Redirect would happen here
   }
@@ -327,34 +334,18 @@ export default function NewProjectPage() {
                   {errors.dataTypes && <p className="text-destructive text-sm mt-1">{errors.dataTypes.message}</p>}
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="requiredElements">Required Elements</Label>
-                    <Input
-                      id="requiredElements"
-                      type="number"
-                      min="1"
-                      {...register("requiredElements", { valueAsNumber: true })}
-                      className={errors.requiredElements ? "border-destructive" : ""}
-                    />
-                    {errors.requiredElements && (
-                      <p className="text-destructive text-sm mt-1">{errors.requiredElements.message}</p>
-                    )}
-                  </div>
-
-                  <div>
-                    <Label htmlFor="totalPrizePool">Total Prize Pool ($)</Label>
-                    <Input
-                      id="totalPrizePool"
-                      type="number"
-                      min="1"
-                      {...register("totalPrizePool", { valueAsNumber: true })}
-                      className={errors.totalPrizePool ? "border-destructive" : ""}
-                    />
-                    {errors.totalPrizePool && (
-                      <p className="text-destructive text-sm mt-1">{errors.totalPrizePool.message}</p>
-                    )}
-                  </div>
+                <div>
+                  <Label htmlFor="totalPrizePool">Total Prize Pool ($)</Label>
+                  <Input
+                    id="totalPrizePool"
+                    type="number"
+                    min="1"
+                    {...register("totalPrizePool", { valueAsNumber: true })}
+                    className={errors.totalPrizePool ? "border-destructive" : ""}
+                  />
+                  {errors.totalPrizePool && (
+                    <p className="text-destructive text-sm mt-1">{errors.totalPrizePool.message}</p>
+                  )}
                 </div>
               </div>
 
@@ -409,9 +400,12 @@ export default function NewProjectPage() {
                           <div className="flex justify-between items-center">
                             <div>
                               <h3 className="font-medium">{form.name || "Untitled Form"}</h3>
-                              <p className="text-sm text-muted-foreground">
-                                {form.fields.length} field{form.fields.length !== 1 ? "s" : ""}
-                              </p>
+                              <div className="flex flex-col text-sm text-muted-foreground">
+                                <span>
+                                  {form.fields.length} field{form.fields.length !== 1 ? "s" : ""}
+                                </span>
+                                <span>{form.requiredElements || 0} required submissions</span>
+                              </div>
                             </div>
                             <div className="flex gap-2">
                               <Button

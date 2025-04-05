@@ -46,8 +46,8 @@ export default function AboutPage() {
                 </div>
                 <div className="order-1 md:order-2 flex justify-center">
                   <div className="relative w-64 h-64 rounded-full bg-accent/20 flex items-center justify-center pulse-glow">
-                    <div className="relative w-48 h-48">
-                      <Image src="/images/data-collection.svg" alt="Data Collection" fill className="animate-float" />
+                    <div className="relative w-32 h-32 flex items-center justify-center">
+                      <Image src="/images/data-collection.png" alt="Data Collection" fill className="animate-float invert object-contain mt-4" />
                     </div>
                   </div>
                 </div>
@@ -56,8 +56,8 @@ export default function AboutPage() {
               <div className="grid md:grid-cols-2 gap-8 items-center">
                 <div className="flex justify-center">
                   <div className="relative w-64 h-64 rounded-full bg-accent/20 flex items-center justify-center pulse-glow">
-                    <div className="relative w-48 h-48">
-                      <Image src="/images/data-storage.svg" alt="Data Storage" fill className="animate-float" />
+                  <div className="relative w-32 h-32 flex items-center justify-center">
+                  <Image src="/images/data-storage.png" alt="Data Storage" fill className="animate-float invert object-contain" />
                     </div>
                   </div>
                 </div>
@@ -112,8 +112,8 @@ export default function AboutPage() {
                 </div>
                 <div className="order-1 md:order-2 flex justify-center">
                   <div className="relative w-64 h-64 rounded-full bg-accent/20 flex items-center justify-center pulse-glow">
-                    <div className="relative w-48 h-48">
-                      <Image src="/images/data-marketplace.svg" alt="Data Marketplace" fill className="animate-float" />
+                    <div className="relative w-32 h-32 flex items-center justify-center">
+                      <Image src="/images/data-marketplace.png" alt="Data Marketplace" fill className="animate-float invert" />
                     </div>
                   </div>
                 </div>
@@ -122,8 +122,8 @@ export default function AboutPage() {
               <div className="grid md:grid-cols-2 gap-8 items-center">
                 <div className="flex justify-center">
                   <div className="relative w-64 h-64 rounded-full bg-accent/20 flex items-center justify-center pulse-glow">
-                    <div className="relative w-48 h-48">
-                      <Image src="/images/rewards.svg" alt="Contributor Rewards" fill className="animate-float" />
+                    <div className="relative w-32 h-32 flex items-center justify-center">
+                      <Image src="/images/rewards.png" alt="Contributor Rewards" fill className="animate-float invert" />
                     </div>
                   </div>
                 </div>
@@ -261,17 +261,17 @@ export default function AboutPage() {
         <section className="text-center glass-card rounded-xl p-10">
           <h2 className="text-2xl font-bold mb-4 text-gradient">Ready to Join the Health Data Revolution?</h2>
           <p className="text-muted-foreground mb-8 max-w-2xl mx-auto">
-            Whether you're a data contributor, researcher, or healthcare organization, Quorion provides the secure
+            Whether you&apos;re a data contributor, researcher, or healthcare organization, Quorion provides the secure
             platform you need to participate in the future of health data.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button size="xl" variant="action" className="whitespace-nowrap" asChild>
+            <Button size="lg" variant="default" className="whitespace-nowrap" asChild>
               <Link href="/projects" className="flex items-center">
                 <span>Explore Projects</span>
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Link>
             </Button>
-            <Button size="xl" variant="action-outline" className="whitespace-nowrap" asChild>
+            <Button size="lg" variant="outline" className="whitespace-nowrap" asChild>
               <Link href="/contact">Contact Us</Link>
             </Button>
           </div>

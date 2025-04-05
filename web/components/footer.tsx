@@ -1,6 +1,6 @@
 import Link from "next/link"
 import Image from "next/image"
-import { Github, Linkedin, Mail, Twitter } from "lucide-react"
+import { Github, Linkedin, Mail } from "lucide-react"
 
 export default function Footer() {
   return (
@@ -26,9 +26,6 @@ export default function Footer() {
               </Link>
               <Link href="https://linkedin.com" target="_blank" rel="noreferrer" aria-label="LinkedIn">
                 <Linkedin className="h-5 w-5 text-muted-foreground hover:text-primary transition-colors" />
-              </Link>
-              <Link href="https://twitter.com" target="_blank" rel="noreferrer" aria-label="Twitter">
-                <Twitter className="h-5 w-5 text-muted-foreground hover:text-primary transition-colors" />
               </Link>
               <Link href="mailto:info@quorion.io" aria-label="Email">
                 <Mail className="h-5 w-5 text-muted-foreground hover:text-primary transition-colors" />
