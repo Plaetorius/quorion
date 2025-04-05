@@ -1,0 +1,216 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 230 20% 10%; /* #121420 */
+    --foreground: 220 20% 90%; /* #E0E1E6 */
+
+    --card: 222 25% 15%; /* #1B2030 */
+    --card-foreground: 220 20% 90%; /* #E0E1E6 */
+
+    --popover: 222 25% 15%; /* #1B2030 */
+    --popover-foreground: 220 20% 90%; /* #E0E1E6 */
+
+    --primary: 225 89% 61%; /* #4056F4 */
+    --primary-foreground: 0 0% 100%; /* #FFFFFF */
+
+    --secondary: 174 64% 49%; /* #2CCCBD */
+    --secondary-foreground: 222 47% 11%; /* #121420 */
+
+    --muted: 223 25% 23%; /* #2D3748 */
+    --muted-foreground: 220 20% 70%; /* #B0B2C3 */
+
+    --accent: 210 88% 66%; /* #5EADF2 */
+    --accent-foreground: 0 0% 100%; /* #FFFFFF */
+
+    --destructive: 300 60% 60%; /* #D957D9 */
+    --destructive-foreground: 0 0% 100%; /* #FFFFFF */
+
+    --border: 223 25% 23%; /* #2D3748 */
+    --input: 223 25% 23%; /* #2D3748 */
+    --ring: 225 89% 61%; /* #4056F4 */
+
+    --radius: 0.6rem;
+  }
+
+  .light {
+    --background: 220 30% 96%; /* #F8F9FC */
+    --foreground: 222 47% 11%; /* #121420 */
+
+    --card: 0 0% 100%; /* #FFFFFF */
+    --card-foreground: 222 47% 11%; /* #121420 */
+
+    --popover: 0 0% 100%; /* #FFFFFF */
+    --popover-foreground: 222 47% 11%; /* #121420 */
+
+    --primary: 225 89% 61%; /* #4056F4 */
+    --primary-foreground: 0 0% 100%; /* #FFFFFF */
+
+    --secondary: 174 64% 49%; /* #2CCCBD */
+    --secondary-foreground: 222 47% 11%; /* #121420 */
+
+    --muted: 220 20% 94%; /* #EFF0F3 */
+    --muted-foreground: 220 10% 40%; /* #666B7A */
+
+    --accent: 210 88% 66%; /* #5EADF2 */
+    --accent-foreground: 0 0% 100%; /* #FFFFFF */
+
+    --destructive: 300 60% 60%; /* #D957D9 */
+    --destructive-foreground: 0 0% 100%; /* #FFFFFF */
+
+    --border: 220 20% 86%; /* #D8DAE5 */
+    --input: 220 20% 86%; /* #D8DAE5 */
+    --ring: 225 89% 61%; /* #4056F4 */
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-medium tracking-tight;
+  }
+  h1 {
+    @apply text-3xl md:text-4xl lg:text-5xl;
+  }
+  h2 {
+    @apply text-2xl md:text-3xl;
+  }
+  h3 {
+    @apply text-xl md:text-2xl;
+  }
+}
+
+@layer components {
+  /* Refined Card Component */
+  .glass-card {
+    @apply bg-card/90 backdrop-blur-md border border-border/40 shadow-lg relative overflow-hidden rounded-xl transition-all duration-300;
+  }
+
+  .glass-card:hover {
+    @apply shadow-xl border-primary/20;
+  }
+
+  /* Refined Gradient Text */
+  .text-gradient {
+    @apply bg-gradient-to-r from-primary via-accent to-secondary bg-clip-text text-transparent;
+  }
+
+  /* Subtle Glow Effect */
+  .glow-text {
+    @apply text-shadow-sm;
+  }
+
+  /* Refined Progress Bar */
+  .progress-gradient {
+    @apply bg-gradient-to-r from-primary via-accent to-secondary;
+  }
+
+  .progress-bg {
+    @apply bg-muted/50;
+  }
+
+  /* Hero Section Gradient */
+  .hero-gradient {
+    @apply bg-gradient-to-br from-background via-background/90 to-primary/20;
+  }
+
+  /* Refined Badge */
+  .data-badge {
+    @apply bg-primary/20 text-primary px-2.5 py-1 text-xs font-medium rounded-full inline-flex items-center gap-1.5 transition-all;
+  }
+
+  .data-badge:hover {
+    @apply bg-primary/30;
+  }
+
+  /* Status Indicators */
+  .status-dot {
+    @apply w-2 h-2 rounded-full inline-block mr-2;
+  }
+
+  .status-active {
+    @apply bg-quorion-success;
+  }
+
+  .status-pending {
+    @apply bg-quorion-warning;
+  }
+
+  /* Shimmer effect */
+  .shimmer {
+    @apply relative overflow-hidden before:absolute before:inset-0 before:bg-gradient-to-r before:from-transparent before:via-white/10 before:to-transparent before:animate-shimmer;
+  }
+
+  /* Circuit Background - Refined */
+  .circuit-bg {
+    background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath fill='%234056F4' fill-opacity='0.05' d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5z' fill-rule='evenodd'/%3E%3C/svg%3E");
+  }
+
+  /* Refined Scrollbar */
+  ::-webkit-scrollbar {
+    @apply w-2 h-2;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-muted/30;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-primary/50 rounded-full transition-colors;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-primary/70;
+  }
+
+  /* Text Shadow Utility */
+  .text-shadow-sm {
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  }
+
+  .text-shadow {
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  }
+
+  .text-shadow-lg {
+    text-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+  }
+}
+
+/* Custom pulse glow effect - defined outside of @apply to avoid syntax issues */
+.pulse-glow {
+  box-shadow: 0 0 15px rgba(64, 86, 244, 0.3);
+  transition: box-shadow 0.3s ease, transform 0.3s ease;
+}
+
+.pulse-glow:hover {
+  box-shadow: 0 0 20px rgba(64, 86, 244, 0.5);
+}
+
+/* Animation for the pulse glow effect */
+@keyframes pulse-animation {
+  0%,
+  100% {
+    box-shadow: 0 0 15px rgba(64, 86, 244, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(64, 86, 244, 0.5);
+  }
+}
+
+.animate-pulse-glow {
+  animation: pulse-animation 3s infinite ease-in-out;
+}
+
