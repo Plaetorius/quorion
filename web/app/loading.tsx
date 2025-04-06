@@ -2,7 +2,7 @@ import { Skeleton } from "@/components/ui/skeleton"
 
 export default function HomeLoading() {
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col min-h-screen opacity-70">
       {/* Hero Section Skeleton */}
       <section className="relative w-full min-h-[85vh] flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-quorion-base/30 via-quorion-surface/30 to-quorion-violet/10"></div>

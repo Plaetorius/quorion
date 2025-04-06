@@ -221,7 +221,7 @@ export const mockForms: MockForm[] = [
       },
       {
         id: "symptom-severity",
-        label: "Symptom Severity (1-10)",
+        label: "Symptom Severity",
         type: "number",
         required: true,
         order: 3,

@@ -74,9 +74,9 @@ export const generateMockSubmissions = (count = 10): FormSubmission[] => {
           .fill(0)
           .map((_, index) => {
             if (fileTypes.includes("image/*")) {
-              return `/placeholder.svg?height=400&width=600&text=Image+${index + 1}`
+              return `/images/data/${index % 2 ? 'skin-1' : 'skin-2'}.jpg`
             } else if (fileTypes.includes("video/*")) {
-              return `/placeholder.svg?height=400&width=600&text=Video+${index + 1}`
+              return `/images/data/${index % 2 ? 'skin-1' : 'skin-2'}.jpg` // PREVIEW
             } else if (fileTypes.includes("audio/*")) {
               return `/placeholder.svg?height=400&width=600&text=Audio+${index + 1}`
             } else {

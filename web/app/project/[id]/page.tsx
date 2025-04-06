@@ -1,7 +1,7 @@
 import Link from "next/link"
 import Image from "next/image"
 import { notFound } from "next/navigation"
-import { Heart, Send, Users, Mail, ArrowLeft, CheckCircle2 } from "lucide-react"
+import { Heart, Send, Users, Mail, ArrowLeft, CheckCircle2, Check } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Progress } from "@/components/ui/progress"
 import { Badge } from "@/components/ui/badge"
@@ -116,6 +116,13 @@ async function ProjectContent({ id }: { id: string }) {
             <Button className="w-full" variant="outline">
               <Mail className="mr-2 h-4 w-4" />
               Contact Team
+            </Button>
+
+            <Button className="w-full" variant="outline" asChild>
+              <Link href={`/project/${project.id}/validator`}>
+                <Check className="mr-2 h-4 w-4" />
+                Validator Access
+              </Link>
             </Button>
           </div>
 

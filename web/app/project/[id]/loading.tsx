@@ -1,10 +1,10 @@
 import { Skeleton } from "@/components/ui/skeleton"
-import { ArrowLeft } from 'lucide-react'
+import { ArrowLeft } from "lucide-react"
 import Link from "next/link"
 
 export default function ProjectLoading() {
   return (
-    <div className="container py-8 md:py-12">
+    <div className="container py-8 md:py-12 opacity-70">
       <Link
         href="/projects"
         className="inline-flex items-center text-sm text-muted-foreground hover:text-foreground mb-6"
@@ -24,7 +24,7 @@ export default function ProjectLoading() {
           </div>
 
           {/* Project Overview Skeleton */}
-          <div className="glass-card rounded-xl p-6">
+          <div className="glass-card rounded-xl p-6 opacity-40">
             <Skeleton className="h-7 w-48 mb-4" />
             <Skeleton className="h-4 w-full mb-2" />
             <Skeleton className="h-4 w-full mb-2" />
@@ -48,7 +48,7 @@ export default function ProjectLoading() {
           </div>
 
           {/* Project Progress Skeleton */}
-          <div className="glass-card rounded-xl p-6">
+          <div className="glass-card rounded-xl p-6 opacity-40">
             <Skeleton className="h-7 w-48 mb-4" />
 
             <div className="space-y-6">
@@ -80,7 +80,7 @@ export default function ProjectLoading() {
         </div>
 
         <div className="space-y-6">
-          <div className="glass-card rounded-xl p-6 sticky top-24">
+          <div className="glass-card rounded-xl p-6 sticky top-24 opacity-40">
             <Skeleton className="h-7 w-40 mb-6" />
 
             <div className="space-y-4">
@@ -118,3 +118,4 @@ export default function ProjectLoading() {
     </div>
   )
 }
+
