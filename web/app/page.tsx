@@ -2,11 +2,11 @@ import Link from "next/link"
 import { ArrowRight, Shield, Lock, Database, Award } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import ProjectCard from "@/components/project-card"
-import { projects } from "@/data/projects"
+import { getFeaturedProjects } from "./actions"
 
-export default function Home() {
-  // Get featured projects
-  const featuredProjects = projects.slice(0, 3)
+export default async function Home() {
+  // Get featured projects from the database
+  const featuredProjects = await getFeaturedProjects()
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -96,9 +96,15 @@ export default function Home() {
         </div>
 
         <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-          {featuredProjects.map((project, index) => (
-            <ProjectCard key={project.id} project={project} featured={index === 0} />
-          ))}
+          {featuredProjects.length > 0 ? (
+            featuredProjects.map((project, index) => (
+              <ProjectCard key={project.id} project={project} featured={index === 0} />
+            ))
+          ) : (
+            <div className="col-span-3 text-center py-12">
+              <p className="text-muted-foreground">No projects available at the moment.</p>
+            </div>
+          )}
         </div>
       </section>
 

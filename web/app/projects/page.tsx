@@ -2,9 +2,11 @@ import Link from "next/link"
 import { Plus } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import ProjectCard from "@/components/project-card"
-import { projects } from "@/data/projects"
+import { getProjects } from "./actions"
 
-export default function ProjectsPage() {
+export default async function ProjectsPage() {
+  const projects = await getProjects()
+
   return (
     <div className="container py-8 md:py-12">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
@@ -22,11 +24,17 @@ export default function ProjectsPage() {
         </Button>
       </div>
 
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {projects.map((project) => (
-          <ProjectCard key={project.id} project={project} />
-        ))}
-      </div>
+      {projects.length === 0 ? (
+        <div className="text-center py-12">
+          <p className="text-muted-foreground">No projects found. Create your first project!</p>
+        </div>
+      ) : (
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          {projects.map((project) => (
+            <ProjectCard key={project.id} project={project} />
+          ))}
+        </div>
+      )}
     </div>
   )
 }
