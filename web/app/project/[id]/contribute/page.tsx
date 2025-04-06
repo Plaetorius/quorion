@@ -119,7 +119,7 @@ export default function ContributePage() {
               <h2 className="text-xl font-semibold mb-4">About Data Contribution</h2>
               <div className="space-y-4 text-muted-foreground">
                 <p>
-                  Your data will be securely stored on our decentralized network using advanced encryption. Smart
+                  Your data will be securely stored on our network using advanced encryption. Smart
                   contracts ensure that your data access is controlled and transparent.
                 </p>
                 <p>

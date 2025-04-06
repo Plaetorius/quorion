@@ -65,13 +65,13 @@ export default function AboutPage() {
                   <div className="glass-card rounded-xl p-6 border-flow">
                     <h3 className="text-xl font-semibold mb-4 text-gradient">Secure Storage</h3>
                     <p className="text-muted-foreground mb-4">
-                      All data is stored on a decentralized network using advanced encryption. Smart contracts ensure
+                      All data is stored on a secure network using advanced encryption. Smart contracts ensure
                       that data access is controlled and transparent.
                     </p>
                     <ul className="space-y-2">
                       <li className="flex items-start gap-2">
                         <span className="text-primary font-bold">•</span>
-                        <span>Decentralized storage prevents single points of failure</span>
+                        <span>Secure storage prevents single points of failure</span>
                       </li>
                       <li className="flex items-start gap-2">
                         <span className="text-primary font-bold">•</span>
@@ -167,7 +167,7 @@ export default function AboutPage() {
               </div>
               <p className="text-muted-foreground">
                 Our platform is built on cutting-edge Web3 technologies, including blockchain, smart contracts, and
-                decentralized storage. This ensures maximum security, transparency, and control for all participants.
+                military-grade secured storage. This ensures maximum security, transparency, and control for all participants.
               </p>
             </div>
 

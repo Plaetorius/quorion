@@ -4,7 +4,7 @@ import { useState, useEffect } from "react"
 import Link from "next/link"
 import Image from "next/image"
 import { usePathname } from "next/navigation"
-import { Menu, X, Search, Bell, User } from "lucide-react"
+import { Menu, X, Bell, User } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 
@@ -74,9 +74,9 @@ export default function Header() {
 
         <div className="flex items-center gap-4">
           {/* Search button */}
-          <button className="hidden sm:flex items-center justify-center h-10 w-10 rounded-full text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors">
+          {/* <button className="hidden sm:flex items-center justify-center h-10 w-10 rounded-full text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors">
             <Search className="h-5 w-5" />
-          </button>
+          </button> */}
 
           {/* Notifications */}
           <button className="hidden sm:flex items-center justify-center h-10 w-10 rounded-full text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors">
@@ -90,7 +90,7 @@ export default function Header() {
 
           {/* Login button */}
           <Link href="/login" className="hidden md:block">
-            <Button variant="primary" size="default" className="whitespace-nowrap pulse-glow">
+            <Button variant="default" size="default" className="whitespace-nowrap pulse-glow">
               Login
             </Button>
           </Link>
@@ -138,7 +138,7 @@ export default function Header() {
               className="flex items-center justify-center py-3 mt-4"
               onClick={() => setIsMenuOpen(false)}
             >
-              <Button variant="primary" className="w-full">
+              <Button variant="default" className="w-full">
                 Login
               </Button>
             </Link>

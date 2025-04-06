@@ -122,7 +122,7 @@ export default function LoginPage() {
         <div className="glass-card rounded-xl p-8">
           <div className="text-center mb-8">
             <h1 className="text-2xl font-bold mb-2">Welcome to Quorion</h1>
-            <p className="text-muted-foreground">Sign in to access the secure health data marketplace</p>
+            <p className="text-muted-foreground">Sign in to access the decentralized health data marketplace</p>
           </div>
 
           <div className="space-y-4">

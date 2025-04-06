@@ -66,7 +66,7 @@ export default async function Home() {
             </div>
             <div className="flex flex-col items-center">
               <Database className="h-6 w-6 text-primary mb-2" />
-              <span className="text-sm text-muted-foreground">Decentralized Storage</span>
+              <span className="text-sm text-muted-foreground">Secure Storage</span>
             </div>
             <div className="flex flex-col items-center">
               <Award className="h-6 w-6 text-primary mb-2" />
