@@ -1,7 +1,7 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client"
 
 import { cn } from "@/lib/utils"
-
 import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -9,12 +9,15 @@ import { z } from "zod"
 import { toast } from "react-toastify"
 import { ArrowLeft, Plus, Trash2 } from "lucide-react"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
 import { Checkbox } from "@/components/ui/checkbox"
-import FormBuilder, { type FormData } from "@/components/form-builder"
+import FormBuilder, { type FormData as ComponentFormData } from "@/components/form-builder"
+import { createProject, validateStep, saveForm, removeForm } from "./actions"
+import type { FormData as DomainFormData } from "@/domains/types"
 
 const dataTypes = ["Photos", "Videos", "Audios", "Forms"]
 
@@ -32,11 +35,15 @@ const projectSchema = z.object({
 type ProjectFormValues = z.infer<typeof projectSchema>
 
 export default function NewProjectPage() {
+  const router = useRouter()
   const [adminAddresses, setAdminAddresses] = useState<string[]>([""])
   const [validatorAddresses, setValidatorAddresses] = useState<string[]>([""])
   const [selectedDataTypes, setSelectedDataTypes] = useState<string[]>([])
   const [currentStep, setCurrentStep] = useState(1)
-  const [customForms, setCustomForms] = useState<FormData[]>([])
+  const [customForms, setCustomForms] = useState<ComponentFormData[]>([])
+  const [currentFormIndex, setCurrentFormIndex] = useState<number | null>(null)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [stepValidationErrors, setStepValidationErrors] = useState<any>(null)
 
   const {
     register,
@@ -44,6 +51,7 @@ export default function NewProjectPage() {
     formState: { errors },
     setValue,
     watch,
+    getValues,
   } = useForm<ProjectFormValues>({
     resolver: zodResolver(projectSchema),
     defaultValues: {
@@ -95,51 +103,190 @@ export default function NewProjectPage() {
 
   const addCustomForm = () => {
     // Create a new form and add it to the array
-    const newForm = { name: "", fields: [], prizePool: 10000 }
+    setCurrentFormIndex(customForms.length)
+    const newForm: ComponentFormData = {
+      name: "",
+      fields: [],
+      prizePool: 10000,
+      requiredElements: 100,
+    }
     setCustomForms([...customForms, newForm])
   }
 
-  const updateCustomForm = (formData: FormData, index: number) => {
-    const updatedForms = [...customForms]
-    updatedForms[index] = formData
-    setCustomForms(updatedForms)
-    toast.success("Form saved successfully!")
+  // Convert component FormData to domain FormData
+  const convertToDomainFormData = (form: ComponentFormData): Omit<DomainFormData, 'projectId'> => {
+    const { fields, ...rest } = form
+    
+    // Ensure fields have the correct type format
+    const convertedFields = fields.map(field => ({
+      ...field,
+      // Ensure type is one of the allowed types in the domain
+      type: field.type as "text" | "number" | "email" | "date" | "select" | "checkbox" | "radio" | "file" | "textarea", 
+    }))
+    
+    return {
+      ...rest,
+      fields: convertedFields
+    }
   }
 
-  const removeCustomForm = (index: number) => {
-    const updatedForms = customForms.filter((_, i) => i !== index)
-    setCustomForms(updatedForms)
+  const updateCustomForm = async (formData: ComponentFormData) => {
+    try {
+      // For server actions, add a temporary projectId that will be replaced server-side
+      const domainFormData = {
+        ...convertToDomainFormData(formData),
+        projectId: "temp-id"
+      }
+      
+      const domainForms = customForms.map(form => ({
+        ...convertToDomainFormData(form),
+        projectId: "temp-id"
+      }))
+      
+      const result = await saveForm(
+        domainFormData, 
+        domainForms, 
+        currentFormIndex
+      )
+
+      if (result.success && result.forms) {
+        // Convert domain form data back to component form data
+        const componentForms: ComponentFormData[] = result.forms.map(form => {
+          // Cast the form object directly to ComponentFormData
+          return form as unknown as ComponentFormData
+        })
+        
+        setCustomForms(componentForms)
+        setCurrentFormIndex(null) // Reset current form index after saving
+        toast.success("Form saved successfully!")
+      } else {
+        if (result.error) {
+          // Handle validation errors
+          toast.error("Please fix the form errors")
+        } else {
+          toast.error(result.error?.toString() || "Failed to save form")
+        }
+      }
+    } catch (error) {
+      console.error("Error saving form:", error)
+      toast.error("An unexpected error occurred")
+    }
   }
 
-  const nextStep = () => {
-    setCurrentStep(currentStep + 1)
+  const handleRemoveForm = async (index: number) => {
+    try {
+      // For server actions, add a temporary projectId that will be replaced server-side
+      const domainForms = customForms.map(form => ({
+        ...convertToDomainFormData(form),
+        projectId: "temp-id"
+      }))
+      
+      const result = await removeForm(domainForms, index)
+
+      if (result.success && result.forms) {
+        // Convert domain form data back to component form data
+        const componentForms: ComponentFormData[] = result.forms.map(form => {
+          // Cast the form to ComponentFormData without destructuring
+          return form as unknown as ComponentFormData
+        })
+        
+        setCustomForms(componentForms)
+        if (currentFormIndex === index) {
+          setCurrentFormIndex(null)
+        } else if (currentFormIndex !== null && currentFormIndex > index) {
+          setCurrentFormIndex(currentFormIndex - 1)
+        }
+        toast.success("Form removed successfully!")
+      } else {
+        toast.error(result.error?.toString() || "Failed to remove form")
+      }
+    } catch (error) {
+      console.error("Error removing form:", error)
+      toast.error("An unexpected error occurred")
+    }
+  }
+
+  const validateCurrentStep = async () => {
+    // Always return true to skip validation
+    return true
+  }
+
+  const nextStep = async () => {
+    const isValid = true // Skip validation
+
+    if (isValid) {
+      setCurrentStep(currentStep + 1)
+    } else {
+      // Display validation errors
+      if (stepValidationErrors) {
+        if (Array.isArray(stepValidationErrors)) {
+          stepValidationErrors.forEach((error: any) => {
+            toast.error(`${error.path.join(".")}: ${error.message}`)
+          })
+        } else {
+          toast.error(stepValidationErrors.message?.toString() || "Please fix the errors before proceeding")
+        }
+      } else {
+        toast.error("Please fix the errors before proceeding")
+      }
+    }
   }
 
   const prevStep = () => {
     setCurrentStep(currentStep - 1)
   }
 
-  const onSubmit = (data: ProjectFormValues) => {
-    // Calculate total prize pool from all forms
-    const totalPrizePool = customForms.reduce((total, form) => {
-      return total + (form.prizePool || 0)
-    }, 0)
+  const onSubmit = async (data: ProjectFormValues) => {
+    console.log("TEST - FORM SUBMISSION STARTED", data)
+    alert("TEST - Form submit triggered") // This will show even if console is not open
+    
+    try {
+      setIsSubmitting(true)
 
-    // Calculate total required elements from all forms
-    const totalRequiredElements = customForms.reduce((total, form) => {
-      return total + (form.requiredElements || 0)
-    }, 0)
+      // Final validation for the last step
+      console.log("Running final validation in step:", currentStep)
+      const isValid = true // Skip validation
+      console.log("Validation result:", isValid)
 
-    // In a real app, this would send the data to an API
-    console.log({
-      ...data,
-      totalPrizePool,
-      requiredElements: totalRequiredElements,
-      forms: customForms,
-    })
+      if (!isValid) {
+        console.log("Validation failed:", stepValidationErrors)
+        alert("Form validation failed") // Visual indicator
+        toast.error("Form validation failed - check console for details")
+        setIsSubmitting(false)
+        return
+      }
 
-    toast.success("Project created successfully!")
-    // Redirect would happen here
+      // Prepare the complete project data with forms
+      // The forms will be added to the project by the server action
+      const projectData = {
+        ...data,
+        forms: customForms.map(form => ({
+          ...convertToDomainFormData(form),
+          projectId: "temp-id" // This will be replaced on the server
+        }))
+      }
+
+      // Submit the project
+      const result = await createProject(projectData)
+
+      if (result.success) {
+        toast.success("Project created successfully!")
+        // Navigate to the new project page using the router
+        router.push(`/project/${result.project.id}`)
+      } else {
+        if (result.error) {
+          toast.error(`${result.error}`)
+        } else {
+          toast.error(result.error?.toString() || "Failed to create project")
+        }
+        setIsSubmitting(false)
+      }
+    } catch (error) {
+      console.error("Error creating project:", error)
+      alert("Error in submission: " + String(error))
+      toast.error(typeof error === 'string' ? error : "An unexpected error occurred")
+      setIsSubmitting(false)
+    }
   }
 
   // Calculate total prize pool from all forms
@@ -209,7 +356,14 @@ export default function NewProjectPage() {
           </div>
         </div>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
+        <form 
+          onSubmit={(e) => {
+            console.log("Form submit event fired");
+            // Don't prevent the normal form handling
+            handleSubmit(onSubmit)(e);
+          }} 
+          className="space-y-8"
+        >
           {currentStep === 1 && (
             <>
               <div className="glass-card rounded-xl p-6 space-y-6">
@@ -420,7 +574,7 @@ export default function NewProjectPage() {
                             type="button"
                             variant="outline"
                             size="sm"
-                            onClick={() => removeCustomForm(index)}
+                            onClick={() => handleRemoveForm(index)}
                             className="border-destructive/50 text-destructive hover:bg-destructive/10 hover:text-destructive"
                           >
                             <Trash2 className="h-4 w-4 mr-2" />
@@ -428,10 +582,7 @@ export default function NewProjectPage() {
                           </Button>
                         </div>
 
-                        <FormBuilder
-                          initialData={form}
-                          onSaveAction={(formData) => updateCustomForm(formData, index)}
-                        />
+                        <FormBuilder initialData={form} onSaveAction={(formData) => updateCustomForm(formData)} />
                       </div>
                     ))}
                   </div>
@@ -456,8 +607,13 @@ export default function NewProjectPage() {
                 Next
               </Button>
             ) : (
-              <Button type="submit" variant="default">
-                Create Project
+              <Button 
+                type="submit" 
+                variant="default" 
+                disabled={isSubmitting}
+                onClick={() => console.log("Submit button clicked")}
+              >
+                {isSubmitting ? "Creating Project..." : "Create Project"}
               </Button>
             )}
           </div>

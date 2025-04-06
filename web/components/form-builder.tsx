@@ -239,10 +239,20 @@ export default function FormBuilder({ initialData, onSaveAction }: FormBuilderPr
   }
 
   const handleSaveForm = (data: FormData) => {
-    onSaveAction({
+    // Ensure all fields have an order property
+    const fieldsWithOrder = fields.map((field, index) => ({
+      ...field,
+      order: field.order || index,
+    }))
+
+    // Create the complete form data
+    const completeFormData = {
       ...data,
-      fields: fields.map((field, index) => ({ ...field, order: index })),
-    })
+      fields: fieldsWithOrder,
+    }
+
+    // Call the onSaveAction callback with the complete form data
+    onSaveAction(completeFormData)
   }
 
   const toggleFieldCollapse = (fieldId: string) => {

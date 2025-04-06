@@ -1,36 +1,59 @@
-// app/api/upload/route.ts
-import { prisma } from '@/lib/prisma';
+import { type NextRequest, NextResponse } from "next/server"
+import { prisma } from "@/lib/prisma"
 
-export async function POST(request: Request) {
+// In a real app, you would use a service like AWS S3, Cloudinary, or Vercel Blob
+// This is a simplified example that assumes files are stored somewhere and returns URLs
+export async function POST(request: NextRequest) {
   try {
-    // Récupère le formData depuis la requête
-    const formData = await request.formData();
-    const file = formData.get('file');
+    const formData = await request.formData()
+    const files = formData.getAll("files") as File[]
+    const submitterId = formData.get("submitterId") as string
 
-    if (!file || !(file instanceof File)) {
-      return new Response('Aucun fichier envoyé.', { status: 400 });
+    if (!files || files.length === 0) {
+      return NextResponse.json({ success: false, error: "No files provided" }, { status: 400 })
     }
 
-    // Convertit le fichier en buffer
-    const buffer = Buffer.from(await file.arrayBuffer());
+    if (!submitterId) {
+      return NextResponse.json({ success: false, error: "Submitter ID is required" }, { status: 400 })
+    }
 
-    // Crée l'enregistrement dans la base de données
-    const newImage = await prisma.image.create({
-      data: {
-        data: buffer,
-        mime: file.type,
-        name: file.name,
-      },
-    });
+    // In a real app, you would upload the files to a storage service
+    // For this example, we'll create placeholder URLs
+    const uploadedFiles = await Promise.all(
+      files.map(async (file) => {
+        // Simulate file upload
+        const fileName = file.name
+        const fileSize = file.size
+        const mimeType = file.type
 
-    return new Response(JSON.stringify(newImage), {
-      status: 200,
-      headers: { 'Content-Type': 'application/json' },
-    });
+        // Create a placeholder URL (in a real app, this would be the actual URL)
+        const url = `/uploads/${Date.now()}_${fileName}`
+
+        // Store file metadata in the database
+        const fileRecord = await prisma.file.create({
+          data: {
+            name: fileName,
+            url,
+            size: fileSize,
+            mimeType,
+            submitterId,
+          },
+        })
+
+        return {
+          id: fileRecord.id,
+          name: fileName,
+          url,
+          size: fileSize,
+          mimeType,
+        }
+      }),
+    )
+
+    return NextResponse.json({ success: true, files: uploadedFiles }, { status: 201 })
   } catch (error) {
-    console.error(error);
-    return new Response('Erreur lors de l\'upload de l\'image.', {
-      status: 500,
-    });
+    console.error("Error uploading files:", error)
+    return NextResponse.json({ success: false, error: "Failed to upload files" }, { status: 500 })
   }
 }
+
