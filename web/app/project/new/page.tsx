@@ -1,11 +1,13 @@
 "use client"
 
+import { cn } from "@/lib/utils"
+
 import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
 import { toast } from "react-toastify"
-import { ArrowLeft, Plus, Trash2 } from 'lucide-react'
+import { ArrowLeft, Plus, Trash2 } from "lucide-react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -24,7 +26,6 @@ const projectSchema = z.object({
   adminAddresses: z.array(z.string().min(1)).min(1, "At least one admin address is required"),
   validatorAddresses: z.array(z.string().min(1)),
   dataTypes: z.array(z.string()).min(1, "Select at least one data type"),
-  totalPrizePool: z.number().min(1, "Prize pool must be at least 1"),
   contactEmail: z.string().email("Please enter a valid email address"),
 })
 
@@ -36,7 +37,6 @@ export default function NewProjectPage() {
   const [selectedDataTypes, setSelectedDataTypes] = useState<string[]>([])
   const [currentStep, setCurrentStep] = useState(1)
   const [customForms, setCustomForms] = useState<FormData[]>([])
-  const [currentFormIndex, setCurrentFormIndex] = useState<number | null>(null)
 
   const {
     register,
@@ -50,7 +50,6 @@ export default function NewProjectPage() {
       adminAddresses: [""],
       validatorAddresses: [""],
       dataTypes: [],
-      totalPrizePool: 10000,
     },
   })
 
@@ -95,28 +94,21 @@ export default function NewProjectPage() {
   }
 
   const addCustomForm = () => {
-    setCurrentFormIndex(customForms.length)
-    setCustomForms([...customForms, { name: "", fields: [] }])
+    // Create a new form and add it to the array
+    const newForm = { name: "", fields: [], prizePool: 10000 }
+    setCustomForms([...customForms, newForm])
   }
 
-  const updateCustomForm = (formData: FormData) => {
-    if (currentFormIndex !== null) {
-      const updatedForms = [...customForms]
-      updatedForms[currentFormIndex] = formData
-      setCustomForms(updatedForms)
-      setCurrentFormIndex(null)
-      toast.success("Form saved successfully!")
-    }
+  const updateCustomForm = (formData: FormData, index: number) => {
+    const updatedForms = [...customForms]
+    updatedForms[index] = formData
+    setCustomForms(updatedForms)
+    toast.success("Form saved successfully!")
   }
 
   const removeCustomForm = (index: number) => {
     const updatedForms = customForms.filter((_, i) => i !== index)
     setCustomForms(updatedForms)
-    if (currentFormIndex === index) {
-      setCurrentFormIndex(null)
-    } else if (currentFormIndex !== null && currentFormIndex > index) {
-      setCurrentFormIndex(currentFormIndex - 1)
-    }
   }
 
   const nextStep = () => {
@@ -128,6 +120,11 @@ export default function NewProjectPage() {
   }
 
   const onSubmit = (data: ProjectFormValues) => {
+    // Calculate total prize pool from all forms
+    const totalPrizePool = customForms.reduce((total, form) => {
+      return total + (form.prizePool || 0)
+    }, 0)
+
     // Calculate total required elements from all forms
     const totalRequiredElements = customForms.reduce((total, form) => {
       return total + (form.requiredElements || 0)
@@ -136,6 +133,7 @@ export default function NewProjectPage() {
     // In a real app, this would send the data to an API
     console.log({
       ...data,
+      totalPrizePool,
       requiredElements: totalRequiredElements,
       forms: customForms,
     })
@@ -143,6 +141,11 @@ export default function NewProjectPage() {
     toast.success("Project created successfully!")
     // Redirect would happen here
   }
+
+  // Calculate total prize pool from all forms
+  const totalPrizePool = customForms.reduce((total, form) => {
+    return total + (form.prizePool || 0)
+  }, 0)
 
   return (
     <div className="container py-8 md:py-12">
@@ -162,32 +165,47 @@ export default function NewProjectPage() {
 
         {/* Progress Steps */}
         <div className="mb-8">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center">
-              <div
-                className={`w-8 h-8 rounded-full flex items-center justify-center ${currentStep >= 1 ? "bg-primary text-white" : "bg-muted text-muted-foreground"}`}
-              >
-                1
+          <div className="flex justify-between items-center">
+            <div className="flex-1 flex items-center">
+              <div className="flex flex-col items-center">
+                <div
+                  className={`w-10 h-10 rounded-full flex items-center justify-center ${currentStep >= 1 ? "bg-primary text-white" : "bg-muted text-muted-foreground"}`}
+                >
+                  1
+                </div>
+                <span
+                  className={`text-xs mt-2 ${currentStep === 1 ? "text-primary font-medium" : "text-muted-foreground"}`}
+                >
+                  Project Details
+                </span>
               </div>
-              <div className={`h-1 w-12 ${currentStep >= 2 ? "bg-primary" : "bg-muted"}`}></div>
-              <div
-                className={`w-8 h-8 rounded-full flex items-center justify-center ${currentStep >= 2 ? "bg-primary text-white" : "bg-muted text-muted-foreground"}`}
-              >
-                2
+              <div className={`h-1 flex-1 mx-2 ${currentStep >= 2 ? "bg-primary" : "bg-muted"}`}></div>
+              <div className="flex flex-col items-center">
+                <div
+                  className={`w-10 h-10 rounded-full flex items-center justify-center ${currentStep >= 2 ? "bg-primary text-white" : "bg-muted text-muted-foreground"}`}
+                >
+                  2
+                </div>
+                <span
+                  className={`text-xs mt-2 ${currentStep === 2 ? "text-primary font-medium" : "text-muted-foreground"}`}
+                >
+                  Data Collection
+                </span>
               </div>
-              <div className={`h-1 w-12 ${currentStep >= 3 ? "bg-primary" : "bg-muted"}`}></div>
-              <div
-                className={`w-8 h-8 rounded-full flex items-center justify-center ${currentStep >= 3 ? "bg-primary text-white" : "bg-muted text-muted-foreground"}`}
-              >
-                3
+              <div className={`h-1 flex-1 mx-2 ${currentStep >= 3 ? "bg-primary" : "bg-muted"}`}></div>
+              <div className="flex flex-col items-center">
+                <div
+                  className={`w-10 h-10 rounded-full flex items-center justify-center ${currentStep >= 3 ? "bg-primary text-white" : "bg-muted text-muted-foreground"}`}
+                >
+                  3
+                </div>
+                <span
+                  className={`text-xs mt-2 ${currentStep === 3 ? "text-primary font-medium" : "text-muted-foreground"}`}
+                >
+                  Custom Forms
+                </span>
               </div>
             </div>
-            <div className="text-sm text-muted-foreground">Step {currentStep} of 3</div>
-          </div>
-          <div className="flex justify-between mt-2 text-xs">
-            <span>Project Details</span>
-            <span>Data Collection</span>
-            <span>Custom Forms</span>
           </div>
         </div>
 
@@ -204,7 +222,7 @@ export default function NewProjectPage() {
                       id="name"
                       placeholder="Enter project name"
                       {...register("name")}
-                      className={errors.name ? "border-destructive" : ""}
+                      className={cn("border-2", errors.name ? "border-destructive" : "border-input")}
                     />
                     {errors.name && <p className="text-destructive text-sm mt-1">{errors.name.message}</p>}
                   </div>
@@ -215,7 +233,7 @@ export default function NewProjectPage() {
                       id="organizationName"
                       placeholder="Enter organization name"
                       {...register("organizationName")}
-                      className={errors.organizationName ? "border-destructive" : ""}
+                      className={cn("border-2", errors.organizationName ? "border-destructive" : "border-input")}
                     />
                     {errors.organizationName && (
                       <p className="text-destructive text-sm mt-1">{errors.organizationName.message}</p>
@@ -228,7 +246,7 @@ export default function NewProjectPage() {
                       id="imageUrl"
                       placeholder="https://example.com/image.jpg"
                       {...register("imageUrl")}
-                      className={errors.imageUrl ? "border-destructive" : ""}
+                      className={cn("border-2", errors.imageUrl ? "border-destructive" : "border-input")}
                     />
                     {errors.imageUrl && <p className="text-destructive text-sm mt-1">{errors.imageUrl.message}</p>}
                   </div>
@@ -240,7 +258,7 @@ export default function NewProjectPage() {
                       placeholder="Describe your project and its goals"
                       rows={4}
                       {...register("description")}
-                      className={errors.description ? "border-destructive" : ""}
+                      className={cn("border-2", errors.description ? "border-destructive" : "border-input")}
                     />
                     {errors.description && (
                       <p className="text-destructive text-sm mt-1">{errors.description.message}</p>
@@ -260,7 +278,10 @@ export default function NewProjectPage() {
                         <Input
                           placeholder="0x..."
                           {...register(`adminAddresses.${index}` as const)}
-                          className={errors.adminAddresses?.[index] ? "border-destructive" : ""}
+                          className={cn(
+                            "border-2",
+                            errors.adminAddresses?.[index] ? "border-destructive" : "border-input",
+                          )}
                         />
                         <Button
                           type="button"
@@ -289,7 +310,10 @@ export default function NewProjectPage() {
                         <Input
                           placeholder="0x..."
                           {...register(`validatorAddresses.${index}` as const)}
-                          className={errors.validatorAddresses?.[index] ? "border-destructive" : ""}
+                          className={cn(
+                            "border-2",
+                            errors.validatorAddresses?.[index] ? "border-destructive" : "border-input",
+                          )}
                         />
                         <Button
                           type="button"
@@ -326,6 +350,7 @@ export default function NewProjectPage() {
                           id={`dataType-${type}`}
                           checked={watchedDataTypes?.includes(type)}
                           onCheckedChange={(checked) => handleDataTypeChange(type, checked === true)}
+                          className="border-2 border-input data-[state=checked]:border-primary"
                         />
                         <Label htmlFor={`dataType-${type}`}>{type}</Label>
                       </div>
@@ -334,97 +359,82 @@ export default function NewProjectPage() {
                   {errors.dataTypes && <p className="text-destructive text-sm mt-1">{errors.dataTypes.message}</p>}
                 </div>
 
-                <div>
-                  <Label htmlFor="totalPrizePool">Total Prize Pool ($)</Label>
-                  <Input
-                    id="totalPrizePool"
-                    type="number"
-                    min="1"
-                    {...register("totalPrizePool", { valueAsNumber: true })}
-                    className={errors.totalPrizePool ? "border-destructive" : ""}
-                  />
-                  {errors.totalPrizePool && (
-                    <p className="text-destructive text-sm mt-1">{errors.totalPrizePool.message}</p>
-                  )}
-                </div>
-              </div>
+                <div className="pt-4 border-t border-border">
+                  <h3 className="text-lg font-medium mb-4">Contact Information</h3>
 
-              <div className="pt-4 border-t border-border">
-                <h3 className="text-lg font-medium mb-4">Contact Information</h3>
-
-                <div>
-                  <Label htmlFor="contactEmail">Contact Email</Label>
-                  <Input
-                    id="contactEmail"
-                    type="email"
-                    placeholder="contact@organization.com"
-                    {...register("contactEmail")}
-                    className={errors.contactEmail ? "border-destructive" : ""}
-                  />
-                  {errors.contactEmail && (
-                    <p className="text-destructive text-sm mt-1">{errors.contactEmail.message}</p>
-                  )}
+                  <div>
+                    <Label htmlFor="contactEmail">Contact Email</Label>
+                    <Input
+                      id="contactEmail"
+                      type="email"
+                      placeholder="contact@organization.com"
+                      {...register("contactEmail")}
+                      className={cn("border-2", errors.contactEmail ? "border-destructive" : "border-input")}
+                    />
+                    {errors.contactEmail && (
+                      <p className="text-destructive text-sm mt-1">{errors.contactEmail.message}</p>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
           )}
 
           {currentStep === 3 && (
-            <div className="glass-card rounded-xl p-6 space-y-6 relative" style={{ zIndex: 10 }}>
-              <div className="flex justify-between items-center">
+            <div
+              className="glass-card rounded-xl p-6 space-y-6 relative border-primary/30 shadow-md"
+              style={{ zIndex: 10 }}
+            >
+              <div className="flex justify-between items-center mb-4">
                 <h2 className="text-xl font-semibold">Custom Data Collection Forms</h2>
-                {currentFormIndex === null && (
-                  <Button type="button" variant="outline" onClick={addCustomForm}>
-                    <Plus className="h-4 w-4 mr-2" />
-                    Add Form
-                  </Button>
-                )}
+                <Button type="button" variant="default" onClick={addCustomForm} className="bg-primary text-white">
+                  <Plus className="h-4 w-4 mr-2" />
+                  Add Form
+                </Button>
               </div>
 
-              {currentFormIndex !== null ? (
-                <FormBuilder initialData={customForms[currentFormIndex]} onSaveAction={updateCustomForm} />
+              {customForms.length === 0 ? (
+                <div className="text-center py-12 border-2 border-dashed border-border rounded-lg">
+                  <p className="text-muted-foreground mb-4">No custom forms created yet.</p>
+                  <Button type="button" variant="default" onClick={addCustomForm} className="bg-primary text-white">
+                    <Plus className="h-4 w-4 mr-2" />
+                    Create Your First Form
+                  </Button>
+                </div>
               ) : (
                 <>
-                  {customForms.length === 0 ? (
-                    <div className="text-center py-12 border-2 border-dashed border-border rounded-lg">
-                      <p className="text-muted-foreground mb-4">No custom forms created yet.</p>
-                      <Button type="button" variant="outline" onClick={addCustomForm}>
-                        <Plus className="h-4 w-4 mr-2" />
-                        Create Your First Form
-                      </Button>
+                  <div className="mb-4 p-4 bg-primary/10 rounded-lg border border-primary/30">
+                    <div className="flex justify-between items-center">
+                      <span className="font-medium">Total Prize Pool:</span>
+                      <span className="text-xl font-bold">${totalPrizePool.toLocaleString()}</span>
                     </div>
-                  ) : (
-                    <div className="space-y-4">
-                      {customForms.map((form, index) => (
-                        <div key={index} className="border rounded-lg p-4">
-                          <div className="flex justify-between items-center">
-                            <div>
-                              <h3 className="font-medium">{form.name || "Untitled Form"}</h3>
-                              <div className="flex flex-col text-sm text-muted-foreground">
-                                <span>
-                                  {form.fields.length} field{form.fields.length !== 1 ? "s" : ""}
-                                </span>
-                                <span>{form.requiredElements || 0} required submissions</span>
-                              </div>
-                            </div>
-                            <div className="flex gap-2">
-                              <Button
-                                type="button"
-                                variant="outline"
-                                size="sm"
-                                onClick={() => setCurrentFormIndex(index)}
-                              >
-                                Edit
-                              </Button>
-                              <Button type="button" variant="outline" size="sm" onClick={() => removeCustomForm(index)}>
-                                <Trash2 className="h-4 w-4" />
-                              </Button>
-                            </div>
-                          </div>
+                  </div>
+                  <div className="space-y-6">
+                    {customForms.map((form, index) => (
+                      <div key={index} className="border-2 border-primary/40 rounded-lg p-6 bg-card/90 shadow-md">
+                        <div className="flex justify-between items-center mb-4">
+                          <h3 className="font-medium text-lg text-primary">
+                            Form {index + 1}: {form.name || "Untitled Form"}
+                          </h3>
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={() => removeCustomForm(index)}
+                            className="border-destructive/50 text-destructive hover:bg-destructive/10 hover:text-destructive"
+                          >
+                            <Trash2 className="h-4 w-4 mr-2" />
+                            Remove Form
+                          </Button>
                         </div>
-                      ))}
-                    </div>
-                  )}
+
+                        <FormBuilder
+                          initialData={form}
+                          onSaveAction={(formData) => updateCustomForm(formData, index)}
+                        />
+                      </div>
+                    ))}
+                  </div>
                 </>
               )}
             </div>
