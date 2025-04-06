@@ -7,6 +7,7 @@ import "react-toastify/dist/ReactToastify.css"
 import Header from "@/components/header"
 import Footer from "@/components/footer"
 import { ThemeProvider } from "@/components/theme-provider"
+import { Web3AuthProvider } from "@/contexts/web3AuthContext"
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -23,14 +24,16 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={inter.className}>
-        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>
-          <div className="flex min-h-screen flex-col bg-gradient-to-br from-quorion-base via-quorion-surface to-quorion-violet/30">
-            <Header />
-            <main className="flex-1">{children}</main>
-            <Footer />
-          </div>
-          <ToastContainer position="top-right" theme="dark" />
-        </ThemeProvider>
+        <Web3AuthProvider>
+          <ThemeProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>
+            <div className="flex min-h-screen flex-col bg-gradient-to-br from-quorion-base via-quorion-surface to-quorion-violet/30">
+              <Header />
+              <main className="flex-1">{children}</main>
+             <Footer />
+           </div>
+           <ToastContainer position="top-right" theme="dark" />
+          </ThemeProvider>
+        </Web3AuthProvider>
       </body>
     </html>
   )

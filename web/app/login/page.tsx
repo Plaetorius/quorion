@@ -1,115 +1,33 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client"
 
 import Link from "next/link"
 import { ArrowLeft, Github, Mail } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { useState, useEffect } from 'react'
-import { CHAIN_NAMESPACES, IAdapter, IProvider, WEB3AUTH_NETWORK } from "@web3auth/base"
-import { EthereumPrivateKeyProvider } from "@web3auth/ethereum-provider"
-import { Web3Auth, Web3AuthOptions } from "@web3auth/modal"
-import { getDefaultExternalAdapters } from "@web3auth/default-evm-adapter"
+import { useWeb3Auth } from "@/contexts/web3AuthContext"
 import { useRouter } from "next/navigation"
-
-// Dashboard Registration
-const clientId = "BPi5PB_UiIZ-cPz1GtV5i1I2iOSOHuimiXBI0e-Oe_u6X3oVAbCiAZOTEBtTXw4tsluTITPqA8zMsfxIKMjiqNQ"
-const chainId = "0x142d" // Bahamut Mainnet (5165 in decimal)
-
-// Chain Config
-const chainConfig = {
-  chainNamespace: CHAIN_NAMESPACES.EIP155,
-  chainId: chainId, 
-  rpcTarget: "https://rpc1.bahamut.io",
-  displayName: "Bahamut Mainnet",
-  blockExplorerUrl: "https://ftnscan.com/",
-  ticker: "FTN",
-  tickerName: "Bahamut",
-  logo: "https://horizon.ftnscan.com/images/logo.png",
-}
+import { useEffect } from "react"
 
 export default function LoginPage() {
-  const [web3auth, setWeb3auth] = useState<Web3Auth | null>(null)
-  const [provider, setProvider] = useState<IProvider | null>(null)
-  const [loggedIn, setLoggedIn] = useState(false)
-  const [consoleOutput, setConsoleOutput] = useState<any>(null)
+  const { 
+    isLoading, 
+    isLoggedIn, 
+    login, 
+    getUserInfo, 
+    logout 
+  } = useWeb3Auth();
+  
   const router = useRouter()
 
+  // If already logged in, redirect to home
   useEffect(() => {
-    const init = async () => {
-      try {
-        // SDK Initialization
-        const privateKeyProvider = new EthereumPrivateKeyProvider({
-          config: { chainConfig },
-        })
-
-        const web3AuthOptions: Web3AuthOptions = {
-          clientId,
-          web3AuthNetwork: WEB3AUTH_NETWORK.SAPPHIRE_MAINNET,
-          privateKeyProvider,
-        }
-
-        const web3authInstance = new Web3Auth(web3AuthOptions)
-        
-        // Configure External Wallets
-        const adapters = getDefaultExternalAdapters({ options: web3AuthOptions })
-        adapters.forEach((adapter: IAdapter<unknown>) => {
-          web3authInstance.configureAdapter(adapter)
-        })
-
-        setWeb3auth(web3authInstance)
-        
-        await web3authInstance.initModal()
-        setProvider(web3authInstance.provider)
-
-        if (web3authInstance.connected) {
-          setLoggedIn(true)
-        }
-      } catch (error) {
-        console.error(error)
-      }
-    }
-
-    init()
-  }, [])
-  
-  const login = async () => {
-    if (!web3auth) {
-      setConsoleOutput("web3auth not initialized yet")
-      return
-    }
-    const web3authProvider = await web3auth.connect()
-    setProvider(web3authProvider)
-    if (web3auth.connected) {
-      setLoggedIn(true)
+    if (isLoggedIn) {
       router.push("/")
     }
-  }
+  }, [isLoggedIn, router])
 
-  const getUserInfo = async () => {
-    if (!web3auth) {
-      setConsoleOutput("web3auth not initialized yet")
-      return
-    }
-    const user = await web3auth.getUserInfo()
-    console.log(user)
-    setConsoleOutput(user)
+  if (isLoading) {
+    return <div>Loading authentication system...</div>
   }
-
-  const logout = async () => {
-    if (!web3auth) {
-      setConsoleOutput("web3auth not initialized yet")
-      return
-    }
-    await web3auth.logout()
-    setProvider(null)
-    setLoggedIn(false)
-    setConsoleOutput("logged out")
-  }
-
-  if (!web3auth) {
-    return <div>Loading...</div>
-  }
-
 
   return (
     <div className="container flex items-center justify-center min-h-[calc(100vh-16rem)] py-8">
@@ -126,7 +44,11 @@ export default function LoginPage() {
           </div>
 
           <div className="space-y-4">
-            <Button className="w-full flex items-center justify-center gap-2" variant="outline" onClick={login}> 
+            <Button 
+              className="w-full flex items-center justify-center gap-2" 
+              variant="outline" 
+              onClick={login}
+            > 
               <Mail className="h-5 w-5" />
               Continue with Google Account
             </Button>
@@ -145,7 +67,11 @@ export default function LoginPage() {
               </div>
             </div>
 
-            <Button className="w-full" variant="default">
+            <Button 
+              className="w-full" 
+              variant="default"
+              onClick={login}
+            >
               Connect Wallet
             </Button>
 
@@ -169,18 +95,7 @@ export default function LoginPage() {
             Sign up
           </Link>
         </p>
-        <div>
-          <Button onClick={getUserInfo}>
-            GetUserInfo
-          </Button>
-        </div>
-        <div>
-          <Button onClick={logout}>
-            Logout
-          </Button>
-        </div>
       </div>
     </div>
   )
 }
-
