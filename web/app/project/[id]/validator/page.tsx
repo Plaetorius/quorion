@@ -20,7 +20,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
-import { getProjectById } from "@/data/projects"
+import { getProjectById } from "../actions"
 import { getProjectSubmissions, getFormForSubmission, type FormSubmission } from "@/data/mock-submissions"
 
 export default function ValidatorPage() {

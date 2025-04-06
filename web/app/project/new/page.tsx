@@ -211,25 +211,10 @@ export default function NewProjectPage() {
     return true
   }
 
-  const nextStep = async () => {
-    const isValid = true // Skip validation
-
-    if (isValid) {
-      setCurrentStep(currentStep + 1)
-    } else {
-      // Display validation errors
-      if (stepValidationErrors) {
-        if (Array.isArray(stepValidationErrors)) {
-          stepValidationErrors.forEach((error: any) => {
-            toast.error(`${error.path.join(".")}: ${error.message}`)
-          })
-        } else {
-          toast.error(stepValidationErrors.message?.toString() || "Please fix the errors before proceeding")
-        }
-      } else {
-        toast.error("Please fix the errors before proceeding")
-      }
-    }
+  const nextStep = () => {
+    // Make this a synchronous function without validation
+    console.log("Moving to next step:", currentStep + 1)
+    setCurrentStep(currentStep + 1)
   }
 
   const prevStep = () => {
@@ -237,8 +222,6 @@ export default function NewProjectPage() {
   }
 
   const onSubmit = async (data: ProjectFormValues) => {
-    console.log("TEST - FORM SUBMISSION STARTED", data)
-    alert("TEST - Form submit triggered") // This will show even if console is not open
     
     try {
       setIsSubmitting(true)
@@ -250,7 +233,6 @@ export default function NewProjectPage() {
 
       if (!isValid) {
         console.log("Validation failed:", stepValidationErrors)
-        alert("Form validation failed") // Visual indicator
         toast.error("Form validation failed - check console for details")
         setIsSubmitting(false)
         return
@@ -283,7 +265,6 @@ export default function NewProjectPage() {
       }
     } catch (error) {
       console.error("Error creating project:", error)
-      alert("Error in submission: " + String(error))
       toast.error(typeof error === 'string' ? error : "An unexpected error occurred")
       setIsSubmitting(false)
     }
@@ -357,10 +338,14 @@ export default function NewProjectPage() {
         </div>
 
         <form 
+          // Prevent default form submission behavior on the entire form
           onSubmit={(e) => {
+            e.preventDefault(); // Add this to explicitly prevent form submission
             console.log("Form submit event fired");
-            // Don't prevent the normal form handling
-            handleSubmit(onSubmit)(e);
+            // Only process submission on final step
+            if (currentStep === 3) {
+              handleSubmit(onSubmit)(e);
+            }
           }} 
           className="space-y-8"
         >
@@ -603,15 +588,26 @@ export default function NewProjectPage() {
             )}
 
             {currentStep < 3 ? (
-              <Button type="button" variant="default" onClick={nextStep}>
+              <Button 
+                type="button" 
+                variant="default" 
+                onClick={(e) => {
+                  e.preventDefault(); // Prevent any form submission
+                  nextStep();
+                }}
+              >
                 Next
               </Button>
             ) : (
               <Button 
-                type="submit" 
+                type="button" // Change to button type instead of implicit submit
                 variant="default" 
                 disabled={isSubmitting}
-                onClick={() => console.log("Submit button clicked")}
+                onClick={(e) => {
+                  e.preventDefault();
+                  console.log("Submit button clicked");
+                  handleSubmit(onSubmit)(e);
+                }}
               >
                 {isSubmitting ? "Creating Project..." : "Create Project"}
               </Button>
