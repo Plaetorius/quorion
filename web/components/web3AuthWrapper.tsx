@@ -9,22 +9,20 @@ import { getDefaultExternalAdapters } from "@web3auth/default-evm-adapter"
 import LoggedInView from './loggedInView'
 import Console from './console'
 
-// Dashboard Registration
 const clientId = "BPi5PB_UiIZ-cPz1GtV5i1I2iOSOHuimiXBI0e-Oe_u6X3oVAbCiAZOTEBtTXw4tsluTITPqA8zMsfxIKMjiqNQ"
-const chainId = "0x9f8" // Bahamut Testnet (2552 in decimal)
+const chainId = "0x142d" // Bahamut Mainnet (5165 in decimal)
 
 // Chain Config
 const chainConfig = {
   chainNamespace: CHAIN_NAMESPACES.EIP155,
   chainId: chainId, 
-  rpcTarget: "https://rpc1-horizon.bahamut.io",
-  displayName: "Bahamut Testnet",
-  blockExplorerUrl: "https://horizon.ftnscan.com",
+  rpcTarget: "https://rpc1.bahamut.io",
+  displayName: "Bahamut Mainnet",
+  blockExplorerUrl: "https://ftnscan.com/",
   ticker: "FTN",
   tickerName: "Bahamut",
   logo: "https://horizon.ftnscan.com/images/logo.png",
 }
-
 export default function Web3AuthWrapper() {
   const [web3auth, setWeb3auth] = useState<Web3Auth | null>(null)
   const [provider, setProvider] = useState<IProvider | null>(null)
